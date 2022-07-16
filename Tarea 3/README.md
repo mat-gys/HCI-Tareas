@@ -1,1 +1,1 @@
-
+En el archivo inicial.py se encuentra el código empleado para conseguir los datos de clima para los distintos counties de Maryland, Estados Unidos. En el archivo PDF se encuentran las consignas 1 y 2 con gráficos de relación entre precipitaciones y un mapa para determinar la relación entre etnia y crimen. Por último, los archivos .gif son los correspondientes a la consigna 3.
