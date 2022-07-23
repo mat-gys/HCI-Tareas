@@ -4,16 +4,16 @@ Name : modelo1
 Group : 
 With QGIS : 32209
 """
-
+# Se importan los paquetes de QGIS necesarios 
 from qgis.core import QgsProcessing
 from qgis.core import QgsProcessingAlgorithm
 from qgis.core import QgsProcessingMultiStepFeedback
 from qgis.core import QgsProcessingParameterFeatureSink
 import processing
 
-
+# Se define una clase para el modelo1:
 class Modelo1(QgsProcessingAlgorithm):
-
+    # Creamos función que crea un destino para los outputs creados por los algoritmos, dentro de esta apareceran cada una de las ramificaciones de lo programado en QGIS
     def initAlgorithm(self, config=None):
         self.addParameter(QgsProcessingParameterFeatureSink('Autoinc_id', 'autoinc_id', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue=None))
         self.addParameter(QgsProcessingParameterFeatureSink('Wldsout', 'wldsout', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue=None))
@@ -21,7 +21,7 @@ class Modelo1(QgsProcessingAlgorithm):
         self.addParameter(QgsProcessingParameterFeatureSink('Field_calc', 'field_calc', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue=None))
         self.addParameter(QgsProcessingParameterFeatureSink('Output_menor_a_11', 'OUTPUT_menor_a_11', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, defaultValue=None))
         self.addParameter(QgsProcessingParameterFeatureSink('Fix_geo', 'fix_geo', type=QgsProcessing.TypeVectorAnyGeometry, createByDefault=True, supportsAppend=True, defaultValue=None))
-
+    # Creamos función principal
     def processAlgorithm(self, parameters, context, model_feedback):
         # Use a multi-step feedback, so that individual child algorithm progress reports are adjusted for the
         # overall progress through the model
@@ -30,6 +30,9 @@ class Modelo1(QgsProcessingAlgorithm):
         outputs = {}
 
         # Feature filter
+
+        # Procedemos a realizar el filtro de la información, quedandonos con la información que cumpla que length<11
+        # el resultado de este proceso se guardará en nuevo archivo o diccionario denominado OUTPUT_menor_a_11
         alg_params = {
             'INPUT': 'Calculado_5c4a16ba_30f2_4b13_89fd_8a1f5924d336',
             'OUTPUT_menor_a_11': parameters['Output_menor_a_11']
@@ -41,7 +44,7 @@ class Modelo1(QgsProcessingAlgorithm):
         if feedback.isCanceled():
             return {}
 
-        # Drop field(s)
+        # Drop field(s): Eliminamos las columnas tomando como referencia los nombres de las mismas: 
         alg_params = {
             'COLUMN': ['ID_ISO_A3','ID_ISO_A2','ID_FIPS','NAM_LABEL','NAME_PROP','NAME2','NAM_ANSI','CNT','C1','POP','LMP_POP1','G','LMP_CLASS','FAMILYPROP','FAMILY','langpc_km2','length'],
             'INPUT': 'Calculado_79570d2b_7538_49d3_b7cb_7383eeb2a42e',
