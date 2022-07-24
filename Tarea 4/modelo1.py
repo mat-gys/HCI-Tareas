@@ -29,7 +29,9 @@ class Modelo1(QgsProcessingAlgorithm):
         results = {}
         outputs = {}
 
+        # #######################################
         # Feature filter
+        # #######################################        
 
         # Procedemos a realizar el filtro de la información, quedandonos con la información que cumpla que length<11
         # el resultado de este proceso se guardará en nuevo archivo o diccionario denominado OUTPUT_menor_a_11
@@ -37,9 +39,12 @@ class Modelo1(QgsProcessingAlgorithm):
             'INPUT': 'Calculado_5c4a16ba_30f2_4b13_89fd_8a1f5924d336',
             'OUTPUT_menor_a_11': parameters['Output_menor_a_11']
         }
+        # Procesamos el INPUT a traves del método 'native:filter', esto se almacena en diccionario outputs con la key "FeatureFilter"
         outputs['FeatureFilter'] = processing.run('native:filter', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
+        # Guardamos el output en el diccionario results
         results['Output_menor_a_11'] = outputs['FeatureFilter']['OUTPUT_menor_a_11']
-
+        
+        # Le digo en que paso del algoritmo estoy para dividirlo en distintos child steps, si algo salió mal, devuelve nada
         feedback.setCurrentStep(1)
         if feedback.isCanceled():
             return {}
@@ -50,14 +55,21 @@ class Modelo1(QgsProcessingAlgorithm):
             'INPUT': 'Calculado_79570d2b_7538_49d3_b7cb_7383eeb2a42e',
             'OUTPUT': parameters['Wldsout']
         }
+        # Procesamos el INPUT a traves del método 'native:deletecolumn', esto se almacena en diccionario outputs con la key "DropFields"
         outputs['DropFields'] = processing.run('native:deletecolumn', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
         results['Wldsout'] = outputs['DropFields']['OUTPUT']
-
+        
+        # Esto es igual que el caso anterior: se menciona que paso del algoritmo se encuentra y si algo sale mal, devuelve nada.
         feedback.setCurrentStep(2)
         if feedback.isCanceled():
             return {}
 
+        # #######################################
         # Calculadora de campos
+        # #######################################        
+        
+        # Creamos diccionario con parametros a utilizar en Field calculator, lo que estamis haciendo es básicamente generar una nueva variable
+        # llamada length en base a aplicar la función length a la variables NAME_PROP
         alg_params = {
             'FIELD_LENGTH': 2,
             'FIELD_NAME': 'length',
@@ -67,14 +79,21 @@ class Modelo1(QgsProcessingAlgorithm):
             'INPUT': 'Incrementado_05e2246b_6fc3_4ebb_bc97_f8cb2216f4d7',
             'OUTPUT': parameters['Length']
         }
+        
+        # El resultado de generar esta variable se realiza a través del método native:fieldcalculator y se guarda en Length
         outputs['CalculadoraDeCampos'] = processing.run('native:fieldcalculator', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
         results['Length'] = outputs['CalculadoraDeCampos']['OUTPUT']
-
+        
+        # Esto es igual que el caso anterior: se menciona que paso del algoritmo se encuentra y si algo sale mal, devuelve nada.
         feedback.setCurrentStep(3)
         if feedback.isCanceled():
             return {}
-
+        
+        # #######################################
         # Field calculator clone
+        # #######################################        
+        
+        # Creamos diccionario con parametros a utilizar en Field calculator clone, es decir estaríamos generando la nueva variable llamada lnm en base a NAME_PROP
         alg_params = {
             'FIELD_LENGTH': 10,
             'FIELD_NAME': 'lnm',
@@ -84,26 +103,36 @@ class Modelo1(QgsProcessingAlgorithm):
             'INPUT': 'menor_a_11_f8a51f42_024d_4e8f_8988_a3993b00a10f',
             'OUTPUT': parameters['Field_calc']
         }
+        # El resultado de clonar la variable se realiza a través del método native:fieldcalculator y se guarda en Field_calc
         outputs['FieldCalculatorClone'] = processing.run('native:fieldcalculator', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
         results['Field_calc'] = outputs['FieldCalculatorClone']['OUTPUT']
-
+        
+        # Esto es igual que el caso anterior: se menciona que paso del algoritmo se encuentra y si algo sale mal, devuelve nada.
         feedback.setCurrentStep(4)
         if feedback.isCanceled():
             return {}
-
+        
+        # #######################################
         # Corregir geometrías
+        # #######################################
+        
         alg_params = {
             'INPUT': 'C:/Users/Hp Support/Videos/03 - Cursos/05 - Herramientas computacionales/Clase 4 - Python-QGIS/langa/langa.shp',
             'OUTPUT': parameters['Fix_geo']
         }
+        # El resultado de clonar la variable se realiza a través del método native:fixgeometries y se guarda en Field_geo
         outputs['CorregirGeometras'] = processing.run('native:fixgeometries', alg_params, context=context, feedback=feedback, is_child_algorithm=True)
         results['Fix_geo'] = outputs['CorregirGeometras']['OUTPUT']
 
+        # Esto es igual que el caso anterior: se menciona que paso del algoritmo se encuentra y si algo sale mal, devuelve nada.     
         feedback.setCurrentStep(5)
         if feedback.isCanceled():
             return {}
 
-        # Agregar campo que auto-incrementa 
+        # #######################################
+        # Agregar campo que auto-incrementa
+        # #######################################      
+        # Creamos diccionario con parametros a utilizar en Field calculator clone, es decir estaríamos generando la nueva variable GID que enumera los idiomas     
         alg_params = {
             'FIELD_NAME': 'GID',
             'GROUP_FIELDS': [''],
