@@ -12,7 +12,7 @@ from qgis.core import QgsProcessingParameterRasterDestination
 from qgis.core import QgsCoordinateReferenceSystem
 import processing
 
-# Se define una clase para el modelo1:
+# Se define una clase para el modelo2:
 class Modelo2(QgsProcessingAlgorithm):
     # Creamos función que crea un destino para los outputs creados por los algoritmos, dentro de esta apareceran cada una de las ramificaciones de lo programado en QGIS
     def initAlgorithm(self, config=None):
