@@ -1,3 +1,4 @@
+# TAREA 1
 '
 Prior to use, install the following packages:
 install.packages("ggplot2")
@@ -144,4 +145,16 @@ pd1 <- ggplot(df,aes(x=BMI_male,y=BMI_female)) +
   ggtitle("BMI") +
   scale_shape_manual(values=c(5, 4, 3, 15, 2, 16, 0))
 pd1
+
+# TAREA 2: 
+
+x <- c("ggmap", "rgdal", "rgeos", "maptools", "dplyr", "tidyr", "tmap")
+
+install.packages(x) 
+lapply(x, library, character.only = TRUE) # load the required packages
+
+setwd("~/Videos/03 - Cursos/05 - Herramientas computacionales/Clase 5 - Data Visualization/Tarea")
+
+library(rgdal)
+lnd <- readOGR(dsn = "data/london_sport.shp")
 
