@@ -158,3 +158,26 @@ setwd("~/Videos/03 - Cursos/05 - Herramientas computacionales/Clase 5 - Data Vis
 library(rgdal)
 lnd <- readOGR(dsn = "data/london_sport.shp")
 
+# Crear mapa de thefts de Londres con ggplot (línea 124 de R)
+
+library(tmap) 
+
+qtm(shp = lnd, fill = "Partic_Per", fill.id = "name", fill.palette = "-Blues", fill.title = "Participation", style = "col_blind") 
+
+# Crear mapa de Participación en deportes de Londres con tmap (línea 147 de R)
+
+install.packages("broom")
+lnd_f <- broom::tidy(lnd)
+
+lnd$id <- row.names(lnd) 
+head(lnd@data, n = 2) 
+lnd_f <- left_join(lnd_f, lnd@data) 
+
+map <- ggplot(lnd_f, aes(long, lat, group = group, fill = Partic_Per)) +
+  geom_polygon() + coord_equal() +
+  labs(x = "Easting (m)", y = "Northing (m)",
+       fill = "% Sports\nParticipation") +
+  ggtitle("London Sports Participation") 
+map + scale_fill_gradient(low = "white", high = "black") 
+  
+map
