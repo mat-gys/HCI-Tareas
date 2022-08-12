@@ -3,8 +3,8 @@ En este repositorio, en la carpeta de output, se encuentran:
 - Dos mapas con la ruta más corta entre dos ciudades de Corrientes realizada con la herramiento Shortest path de QNEAT3
 
 ## Requisitos
--MMQGIS
--QNEAT3
+- MMQGIS
+- QNEAT3
 
 ## Inputs
 
