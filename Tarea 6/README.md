@@ -2,7 +2,8 @@ En este repositorio, en la carpeta de output, se encuentran:
 - Un csv con la matriz OD realizada con QNEAT3 en QGIS entre las capitales de los departamentos de Corrientes, Argentina
 - Dos mapas con la ruta más corta entre dos ciudades de Corrientes realizada con la herramiento Shortest path de QNEAT3
 
-## Requisitos
+## Requisitos para replicación
+Los plugins de QGIS necesarios para replicar los outputs son:
 - MMQGIS
 - QNEAT3
 
