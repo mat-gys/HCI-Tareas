@@ -83,7 +83,7 @@ panela <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype
   scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
   lefttheme + 
   scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid")) +
-  xlab("Year")+
+  xlab("")+
   ylab("")+
   ylim(20,100) +
   xlim(1994, 2002)+
@@ -100,7 +100,7 @@ panelb <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype
   scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
   righttheme + 
   scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid"), labels = NULL) +
-  xlab("Year")+
+  xlab("")+
   ylab("")+
   ylim(20,100) +
   ggtitle("(B) After") + guides(linetype = "none", colour = "none")
@@ -135,7 +135,7 @@ panelc <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype
   ylab("")+
   ylim(20,100) +
   xlim(1994, 2002)+
-  ggtitle("(C) Before") + guides(linetype = "none", colour = "none")
+  ggtitle("(C)") + guides(linetype = "none", colour = "none")
 panelc
 
 
@@ -151,12 +151,12 @@ paneld <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype
   xlab("Year")+
   ylab("")+
   ylim(20,100) +
-  ggtitle("(D) After") + guides(linetype = "none", colour = "none")
+  ggtitle("(D)") + guides(linetype = "none", colour = "none")
 paneld
 
 
 # FIGURE 3
-top <- ggarrange(panela, panelb, ncol = 2, common.legend = TRUE)
+top <- ggarrange(panela, panelb, ncol = 2, common.legend = TRUE) %>% annotate_figure(top = text_grob("All municipalities", face = "bold", size = 12))
 bot <- ggarrange(panelc, paneld, ncol = 2) %>% 
   annotate_figure(plot, top = text_grob("Municipalities with firm data available", face = "bold", size = 12))
-ggarrange(top, bot, nrow = 2) %>%  annotate_figure(fig.lab.pos = "top.left", fig.lab = "Mean homicide rates", fig.lab.face = "bold", fig.lab.size = 16, top = text_grob("All municipalities", face = "bold", size = 12))
+ggarrange(NULL, top, bot, nrow = 3, heights = c(0.06, 1, 1)) %>%  annotate_figure(fig.lab.pos = "top.left", fig.lab = "Mean homicide rates by vote share in first and second presidential election", fig.lab.face = "bold", fig.lab.size = 14)
