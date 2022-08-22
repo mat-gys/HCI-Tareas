@@ -1,0 +1,162 @@
+### REPLICA FIGURA 3 "Is murder bad for business? Evidence from Colombia"
+
+#install.packages('haven')
+#install.packages('ggpubr')
+
+# Working directory
+setwd("C:\\Users\\Matias\\Documents\\UDESA\\Herramientas computacionales\\HCI-Tareas\\Trabajo Final\\dataverse_files")
+
+# Abrimos librerias
+library('haven')
+library('dplyr')
+library('ggthemes')
+library('ggplot2')
+library('ggpubr')
+library("tidyverse")
+################# Figura 3 #################
+df <- read_dta('figures1_3_4_data.dta')
+
+
+##### Paneles A & B
+df$yes_02 <- as.integer(df$s_uribe_02>=0.5)
+df$yes_02[is.na(df$yes_02)] <- 1 # STATA pone 1 en los NA's, R no. Lo hago manualmente
+df$no_02 <- as.integer(df$s_uribe_02<0.5)
+
+df$yes_02_y <-as.integer(df$s_uribe_06>=0.5 & df$yes_02 == 1)
+df$yes_02_y[is.na(df$yes_02_y)] <- 1 # STATA pone 1 en los NA's, R no. Lo hago manualmente
+# Calculo la media de tasas de homicidios por año cuando yes_02_y es igual a 1
+df <- df %>% group_by(year) %>% mutate( m_yes_02_y = mean(hom_r[yes_02_y== 1], na.rm = T)) 
+df$m_yes_02_y[df$yes_02_y == 0] <- NA
+
+df$yes_02_n <-as.integer(df$s_uribe_06<0.5 & df$yes_02 == 1)
+df <- df %>% group_by(year) %>% mutate( m_yes_02_n = mean(hom_r[yes_02_n== 1], na.rm = T)) 
+df$m_yes_02_n[df$yes_02_n == 0] <- NA
+
+# df %>% group_by(year) %>% count(yes_02)
+df %>% group_by(year) %>% count(no_02_y)
+
+df$no_02_y <- as.integer(df$s_uribe_06>=0.5 & df$no_02 == 1)
+df$no_02_y[is.na(df$no_02_y)] <- 0 # STATA pone 0 en los NA's, R no. Lo hago manualmente
+# Me da MUY LEVEMENTE distinto, revisar
+df <- df %>% group_by(year) %>% mutate( m_no_02_y = mean(hom_r[no_02_y== 1], na.rm = T))
+df$m_no_02_y[df$no_02_y == 0] <- NA
+
+df$no_02_n <- as.integer(df$s_uribe_06<0.5 & df$no_02 == 1)
+df$no_02_n[is.na(df$no_02_n)] <- 0 # STATA pone 0 en los NA's, R no. Lo hago manualmente
+df <- df %>% group_by(year) %>% mutate( m_no_02_n = mean(hom_r[no_02_n== 1], na.rm = T))
+df$m_no_02_n[df$no_02_n == 0] <- NA
+
+# Seteo los themes
+lefttheme <-theme(plot.background=element_rect(fill="white"),
+                panel.background = element_rect(fill="aliceblue"),
+                panel.grid.major = element_line(color="azure2",linetype=1),
+                panel.border = element_rect(colour = "antiquewhite4", fill=NA, size=1),
+                plot.caption = element_text(hjust = 0),
+                plot.title = element_text(size = 10),
+                legend.position = "top",
+                legend.title = element_text(size = 12),
+                legend.text = element_text(size = 10),
+                legend.background = element_blank(),
+                legend.key = element_blank())
+
+righttheme <-theme(plot.background=element_rect(fill="white"),
+                 panel.background = element_rect(fill="aliceblue"),
+                 panel.grid.major = element_line(color="azure2",linetype=1),
+                 panel.border = element_rect(colour = "antiquewhite4", fill=NA, size=1),
+                 plot.caption = element_text(hjust = 0),
+                 plot.title = element_text(size = 10),
+                 legend.position = "top",
+                 legend.title = element_text(size = 12),
+                 legend.text = element_text(size = 10),
+                 legend.background = element_blank(),
+                 legend.key = element_blank(),
+                 axis.ticks.y = element_blank(),
+                 axis.text.y = element_blank())
+
+
+
+## Panel A
+df2 <- df %>% gather("winloss", "mean_hom_rate", c(10, 12, 14,16))
+df2 <- df2%>%filter(year <=2001)%>%group_by(winloss,year)%>%summarise("mean_hom_rate"=mean(mean_hom_rate,na.rm=T))
+panela <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype = winloss)) +
+  geom_line(lwd = 2)  +
+  scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
+  lefttheme + 
+  scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid")) +
+  xlab("Year")+
+  ylab("")+
+  ylim(20,100) +
+  xlim(1994, 2002)+
+  ggtitle("(A) Before Uribe") + guides(linetype = "none")
+panela
+
+
+
+## Panel B
+df2 <- df %>% gather("winloss", "mean_hom_rate", c(10, 12, 14,16))
+df2 <- df2%>%filter(year >2001)%>%group_by(winloss,year)%>%summarise("mean_hom_rate"=mean(mean_hom_rate,na.rm=T))
+panelb <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype = winloss)) +
+  geom_line(lwd = 2)  +
+  scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
+  righttheme + 
+  scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid"), labels = NULL) +
+  xlab("Year")+
+  ylab("")+
+  ylim(20,100) +
+  ggtitle("(B) After") + guides(linetype = "none", colour = "none")
+panelb
+
+
+
+##### Paneles C & D
+df <- df %>% group_by(year) %>% mutate( m_yes_02_y = mean(hom_r[yes_02_y== 1 & manu_sample == 1], na.rm = T))
+df$m_yes_02_y[df$yes_02_y == 0 | is.na(df$manu_sample)] <- NA
+
+df <- df %>% group_by(year) %>% mutate( m_yes_02_n = mean(hom_r[yes_02_n== 1 & manu_sample == 1], na.rm = T))
+df$m_yes_02_n[df$yes_02_n == 0 | is.na(df$manu_sample)] <- NA
+
+df <- df %>% group_by(year) %>% mutate( m_no_02_y = mean(hom_r[no_02_y== 1 & manu_sample == 1], na.rm = T))
+df$m_no_02_y[df$no_02_y == 0 | is.na(df$manu_sample)] <- NA
+
+df <- df %>% group_by(year) %>% mutate( m_no_02_n = mean(hom_r[no_02_n== 1 & manu_sample == 1], na.rm = T))
+df$m_no_02_n[df$no_02_n == 0 | is.na(df$manu_sample)] <- NA
+
+
+
+# Panel C
+df2 <- df %>% gather("winloss", "mean_hom_rate", c(10, 12, 14,16))
+df2 <- df2%>%filter(year <=2001)%>%group_by(winloss,year)%>%summarise("mean_hom_rate"=mean(mean_hom_rate,na.rm=T))
+panelc <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype = winloss)) +
+  geom_line(lwd = 2)  +
+  scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
+  lefttheme + 
+  scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid"), labels = NULL) +
+  xlab("Year")+
+  ylab("")+
+  ylim(20,100) +
+  xlim(1994, 2002)+
+  ggtitle("(C) Before") + guides(linetype = "none", colour = "none")
+panelc
+
+
+
+## Panel D
+df2 <- df %>% gather("winloss", "mean_hom_rate", c(10, 12, 14,16))
+df2 <- df2%>%filter(year >2001)%>%group_by(winloss,year)%>%summarise("mean_hom_rate"=mean(mean_hom_rate,na.rm=T))
+paneld <- ggplot(df2, aes(x = year, y = mean_hom_rate, color = winloss, linetype = winloss)) +
+  geom_line(lwd = 2)  +
+  scale_color_manual(name = "", values = c( "orange", "darkgreen", "bisque3", "darkslateblue"), labels = c("Always lost", "Lost 1- Won 2", "Won 1- Lost 2", "Always Won"))+
+  righttheme + 
+  scale_linetype_manual(values = c("dashed", "dotdash", "11", "solid"), labels = NULL) +
+  xlab("Year")+
+  ylab("")+
+  ylim(20,100) +
+  ggtitle("(D) After") + guides(linetype = "none", colour = "none")
+paneld
+
+
+# FIGURE 3
+top <- ggarrange(panela, panelb, ncol = 2, common.legend = TRUE)
+bot <- ggarrange(panelc, paneld, ncol = 2) %>% 
+  annotate_figure(plot, top = text_grob("Municipalities with firm data available", face = "bold", size = 12))
+ggarrange(top, bot, nrow = 2) %>%  annotate_figure(fig.lab.pos = "top.left", fig.lab = "Mean homicide rates", fig.lab.face = "bold", fig.lab.size = 16, top = text_grob("All municipalities", face = "bold", size = 12))
